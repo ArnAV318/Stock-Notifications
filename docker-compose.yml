@@ -82,6 +82,22 @@ services:
     volumes:
       - flink_checkpoints:/opt/flink/checkpoints
 
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+    healthcheck:
+      test: ["CMD-SHELL", '[ "$(curl -s -o /dev/null -I -w ''%{http_code}'' http://localhost:8000)" == "400" ]']
+      interval: 5s
+      timeout: 10s
+      retries: 2
+
+
 volumes:
   kafka_data:
   flink_checkpoints:
